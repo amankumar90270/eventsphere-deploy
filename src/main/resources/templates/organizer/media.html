@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Media - EventSphere Organiser</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+    <link th:href="@{/css/admin.css}" rel="stylesheet"/>
+</head>
+<body>
+<div class="dashboard-wrapper">
+    <div th:replace="~{organizer/organizerheader :: organizerheader}"></div>
+    <main class="main-content" id="mainContent">
+        <nav class="dashboard-navbar">
+            <button class="navbar-toggle" id="sidebarToggle"><i class="bi bi-list"></i></button>
+            <div class="navbar-actions ms-auto">
+                <div class="user-profile">
+                    <div class="user-avatar" th:text="${organizer != null ? organizer.initials : 'OR'}">OR</div>
+                    <div class="d-none d-md-block"><div class="fw-600" th:text="${organizer != null ? organizer.fullName : 'Organiser'}">Organiser</div><small class="text-muted">Event Organiser</small></div>
+                </div>
+            </div>
+        </nav>
+        <div class="p-4">
+            <div class="mb-4"><h2 class="fw-bold mb-1">Media &amp; Banners</h2><p class="text-muted">Manage event images and promotional media</p></div>
+            <div class="row g-4">
+                <div th:each="ev : ${events}" class="col-md-6">
+                    <div class="table-card p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="fw-bold mb-0" th:text="${ev.title}">Event</h6>
+                            <span class="badge" th:classappend="${ev.status.name()=='APPROVED'}?'bg-success':(${ev.status.name()=='PENDING'}?'bg-warning text-dark':'bg-secondary')" th:text="${ev.status}">STATUS</span>
+                        </div>
+                        <div class="border rounded d-flex align-items-center justify-content-center" style="height:160px;background:#f8f9fa;cursor:pointer;">
+                            <div class="text-center text-muted">
+                                <i class="bi bi-image fs-1 d-block mb-2"></i>
+                                <div class="small">Click to upload banner image</div>
+                            </div>
+                        </div>
+                        <div class="mt-2 d-flex gap-2">
+                            <input type="file" class="form-control form-control-sm" accept="image/*"/>
+                        </div>
+                    </div>
+                </div>
+                <div th:if="${#lists.isEmpty(events)}" class="col-12 text-center py-5">
+                    <i class="bi bi-images fs-1 text-muted d-block mb-3"></i>
+                    <h5 class="text-muted">No events to manage media for</h5>
+                    <a th:href="@{/organizer/createevent}" class="btn btn-primary-custom mt-2">Create Event</a>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>document.getElementById('sidebarToggle').addEventListener('click',function(){document.getElementById('sidebar').classList.toggle('collapsed');document.getElementById('mainContent').classList.toggle('expanded');});</script>
+</body>
+</html>

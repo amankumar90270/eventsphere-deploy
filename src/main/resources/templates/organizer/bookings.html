@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Bookings - EventSphere Organiser</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
+    <link th:href="@{/css/admin.css}" rel="stylesheet"/>
+</head>
+<body>
+<div class="dashboard-wrapper">
+    <div th:replace="~{organizer/organizerheader :: organizerheader}"></div>
+
+    <main class="main-content" id="mainContent">
+        <nav class="dashboard-navbar">
+            <button class="navbar-toggle" id="sidebarToggle"><i class="bi bi-list"></i></button>
+            <div class="navbar-search">
+                <i class="bi bi-search position-absolute ms-3 mt-2"></i>
+                <input type="text" id="searchInput" placeholder="Search bookings..." onkeyup="filterTable()">
+            </div>
+            <div class="navbar-actions ms-auto">
+                <div class="user-profile">
+                    <div class="user-avatar" th:text="${organizer != null ? organizer.initials : 'OR'}">OR</div>
+                    <div class="d-none d-md-block">
+                        <div class="fw-600" th:text="${organizer != null ? organizer.fullName : 'Organiser'}">Organiser</div>
+                        <small class="text-muted">Organiser</small>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="fw-bold mb-1">Bookings for My Events</h2>
+                    <p class="text-muted mb-0">All attendees booked for your events</p>
+                </div>
+            </div>
+
+            <!-- Empty state -->
+            <div th:if="${#lists.isEmpty(bookings)}" class="text-center py-5">
+                <i class="bi bi-ticket-perforated fs-1 text-muted d-block mb-3"></i>
+                <h5 class="text-muted">No bookings yet</h5>
+                <p class="text-muted small">Once users book your events, they'll appear here.</p>
+            </div>
+
+            <!-- Bookings Table -->
+            <div class="table-card p-0" th:if="${!#lists.isEmpty(bookings)}">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0" id="bookingsTable">
+                        <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">#</th>
+                            <th>Booking Ref</th>
+                            <th>Member</th>
+                            <th>Event</th>
+                            <th>Qty</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="b, i : ${bookings}" th:data-status="${b.status}">
+                            <td class="ps-4 text-muted" th:text="${i.count}"></td>
+                            <td><code class="text-primary" th:text="${b.bookingRef}">REF</code></td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fw-bold"
+                                         style="width:32px;height:32px;font-size:.75rem;"
+                                         th:text="${b.user.initials}">??</div>
+                                    <div>
+                                        <div class="fw-600 small" th:text="${b.user.fullName}">Name</div>
+                                        <div class="text-muted" style="font-size:.75rem;" th:text="${b.user.email}">email</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="small fw-600" th:text="${b.event.title}">Event</td>
+                            <td th:text="${b.quantity}">1</td>
+                            <td class="fw-bold">₹<span th:text="${#numbers.formatDecimal(b.totalAmount,1,'COMMA',0,'POINT')}">0</span></td>
+                            <td>
+                                <span class="badge"
+                                      th:classappend="${b.status.name() == 'CONFIRMED'} ? 'bg-success' :
+                                                      (${b.status.name() == 'PENDING'} ? 'bg-warning text-dark' : 'bg-danger')"
+                                      th:text="${b.status}">STATUS</span>
+                            </td>
+                            <td class="small text-muted" th:text="${#temporals.format(b.createdAt,'dd MMM yyyy')}">—</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.getElementById('sidebarToggle').addEventListener('click', function () {
+        document.getElementById('sidebar').classList.toggle('collapsed');
+        document.getElementById('mainContent').classList.toggle('expanded');
+    });
+    function filterTable() {
+        const q = document.getElementById('searchInput').value.toLowerCase();
+        document.querySelectorAll('#bookingsTable tbody tr').forEach(tr => {
+            tr.style.display = tr.innerText.toLowerCase().includes(q) ? '' : 'none';
+        });
+    }
+</script>
+</body>
+</html>

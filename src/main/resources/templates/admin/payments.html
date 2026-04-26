@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Payments - EventSphere Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+    <link th:href="@{/css/admin.css}" rel="stylesheet"/>
+</head>
+<body>
+<div class="dashboard-wrapper">
+    <div th:replace="~{admin/adminheader :: header}"></div>
+    <main class="main-content" id="mainContent">
+        <nav class="dashboard-navbar">
+            <button class="navbar-toggle" id="sidebarToggle"><i class="bi bi-list"></i></button>
+            <div class="navbar-search"><i class="bi bi-search position-absolute ms-3 mt-2"></i>
+                <input type="text" id="searchInput" placeholder="Search payments..." onkeyup="filterTable()"></div>
+            <div class="navbar-actions">
+                <div class="user-profile"><div class="user-avatar">AD</div>
+                    <div class="d-none d-md-block"><div class="fw-600">Admin</div><small class="text-muted">Administrator</small></div>
+                </div>
+            </div>
+        </nav>
+        <div class="p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div><h2 class="fw-bold mb-1">Payment Transactions</h2>
+                    <p class="text-muted mb-0">Monitor all payment activity and revenue</p></div>
+            </div>
+
+            <!-- Revenue Stats -->
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-lg-3">
+                    <div class="table-card p-4" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:white">
+                        <div class="small opacity-75 mb-1">Total Revenue</div>
+                        <div class="fs-3 fw-bold">₹<span th:text="${#numbers.formatDecimal(totalRevenue,1,'COMMA',0,'POINT')}">0</span></div>
+                        <div class="small opacity-75 mt-1"><i class="bi bi-currency-rupee"></i> Confirmed bookings</div>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="table-card p-4">
+                        <div class="text-muted small mb-1">Total Transactions</div>
+                        <div class="fs-3 fw-bold" th:text="${#lists.size(payments)}">0</div>
+                        <div class="text-muted small mt-1">All time</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payments Table -->
+            <div class="table-card p-0">
+                <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0">All Transactions</h5>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0" id="paymentsTable">
+                        <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">#</th>
+                            <th>Transaction ID</th>
+                            <th>Booking Ref</th>
+                            <th>User</th>
+                            <th>Event</th>
+                            <th>Method</th>
+                            <th>Amount</th>
+                            <th>Date</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:if="${#lists.isEmpty(payments)}">
+                            <td colspan="8" class="text-center py-5 text-muted">
+                                <i class="bi bi-credit-card fs-1 d-block mb-2"></i>No payments yet.
+                            </td>
+                        </tr>
+                        <tr th:each="p, i : ${payments}">
+                            <td class="ps-4 text-muted" th:text="${i.count}"></td>
+                            <td><code class="text-primary small" th:text="${p.transactionId}">TXN</code></td>
+                            <td><code class="small" th:text="${p.booking.bookingRef}">REF</code></td>
+                            <td th:text="${p.booking.user.fullName}">User</td>
+                            <td class="small" th:text="${p.booking.event.title}">Event</td>
+                            <td>
+                                <span class="badge bg-light text-dark border" th:text="${p.method}">Method</span>
+                            </td>
+                            <td class="fw-bold text-success">₹<span th:text="${#numbers.formatDecimal(p.amount,1,'COMMA',0,'POINT')}">0</span></td>
+                            <td class="small text-muted" th:text="${#temporals.format(p.createdAt,'dd MMM yyyy')}">—</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.getElementById('sidebarToggle').addEventListener('click',function(){
+        document.getElementById('sidebar').classList.toggle('collapsed');
+        document.getElementById('mainContent').classList.toggle('expanded');
+    });
+    function filterTable(){
+        const q=document.getElementById('searchInput').value.toLowerCase();
+        document.querySelectorAll('#paymentsTable tbody tr').forEach(tr=>{
+            tr.style.display=tr.innerText.toLowerCase().includes(q)?'':'none';
+        });
+    }
+</script>
+</body>
+</html>

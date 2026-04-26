@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>About Us - EventSphere</title>
+  <style>
+    :root{--primary:#1a73e8;--primary-dark:#0d47a1;}
+    body{font-family:'DM Sans',sans-serif;}
+    h1,h2,h3,h4,h5{font-family:'Poppins',sans-serif;}
+
+    .hero-about{background:linear-gradient(135deg,#0d1b3e 0%,#1a3a6e 100%);padding:100px 0 80px;color:#fff;position:relative;overflow:hidden;}
+    .hero-about::before{content:'';position:absolute;top:-50%;right:-10%;width:500px;height:500px;border-radius:50%;background:rgba(26,115,232,.15);}
+    .stat-card{background:#fff;border-radius:16px;padding:30px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.08);transition:.3s;}
+    .stat-card:hover{transform:translateY(-6px);box-shadow:0 12px 40px rgba(0,0,0,.15);}
+    .stat-icon{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:1.6rem;}
+    .stat-num{font-size:2.2rem;font-weight:800;color:var(--primary);}
+    .mission-card{background:linear-gradient(135deg,#e8f0fe,#fff);border-radius:16px;padding:30px;border-left:5px solid var(--primary);}
+    .vision-card{background:linear-gradient(135deg,#fff3e0,#fff);border-radius:16px;padding:30px;border-left:5px solid #ff6f00;}
+    .team-card{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.08);transition:.3s;text-align:center;}
+    .team-card:hover{transform:translateY(-5px);}
+    .team-img{width:100%;height:200px;object-fit:cover;}
+    .team-social a{width:34px;height:34px;border-radius:50%;background:#f0f4ff;display:inline-flex;align-items:center;justify-content:center;color:var(--primary);font-size:.85rem;text-decoration:none;transition:.2s;}
+    .team-social a:hover{background:var(--primary);color:#fff;}
+    .why-item{display:flex;gap:16px;align-items:flex-start;padding:20px;background:#fff;border-radius:14px;box-shadow:0 2px 12px rgba(0,0,0,.06);transition:.2s;}
+    .why-item:hover{box-shadow:0 6px 24px rgba(0,0,0,.1);}
+    .why-icon{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;}
+    .section-tag{background:#e8f0fe;color:var(--primary);padding:6px 18px;border-radius:50px;font-size:.82rem;font-weight:600;display:inline-block;margin-bottom:12px;}
+    .timeline-item{position:relative;padding-left:40px;margin-bottom:30px;}
+    .timeline-item::before{content:'';position:absolute;left:12px;top:28px;bottom:-30px;width:2px;background:#e0e0e0;}
+    .timeline-item:last-child::before{display:none;}
+    .timeline-dot{position:absolute;left:0;top:4px;width:26px;height:26px;background:var(--primary);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.7rem;}
+    footer{background:#0d1b3e;color:#fff;padding:40px 0 20px;}
+    footer a{color:#aaa;text-decoration:none;}
+    footer a:hover{color:#fff;}
+  </style>
+
+
+</head>
+<body>
+<!-- Navbar -->
+<div th:replace="~{public/publicheader :: publicheader}"></div>
+
+
+<!-- Hero -->
+<section class="hero-about">
+  <div class="container text-center position-relative">
+    <span class="section-tag">About EventSphere</span>
+    <h1 class="display-4 fw-800 mt-2 mb-3">A Trusted<br/>Event Platform</h1>
+    <p class="lead opacity-75 mx-auto" style="max-width:600px;">We connect passionate audiences with extraordinary experiences — from concerts and sports to corporate events and cultural festivals.</p>
+    <div class="d-flex justify-content-center gap-3 mt-4">
+      <a th:href="@{/public/upcomingevents}" class="btn btn-primary btn-lg px-4">Explore Events</a>
+      <a th:href="@{/public/contact}" class="btn btn-outline-light btn-lg px-4">Contact Us</a>
+    </div>
+  </div>
+</section>
+
+<!-- Stats -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-6 col-md-3">
+        <div class="stat-card">
+          <div class="stat-icon bg-primary bg-opacity-10 text-primary"><i class="bi bi-calendar-event"></i></div>
+          <div class="stat-num">10+</div>
+          <div class="text-muted">Events Hosted</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-card">
+          <div class="stat-icon bg-success bg-opacity-10 text-success"><i class="bi bi-people"></i></div>
+          <div class="stat-num">10+</div>
+          <div class="text-muted">Happy Users</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-card">
+          <div class="stat-icon bg-warning bg-opacity-10 text-warning"><i class="bi bi-person-badge"></i></div>
+          <div class="stat-num">15+</div>
+          <div class="text-muted"> Active Organizers</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-card">
+          <div class="stat-icon bg-danger bg-opacity-10 text-danger"><i class="bi bi-geo-alt"></i></div>
+          <div class="stat-num">20+</div>
+          <div class="text-muted">Ticket Booked</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Mission & Vision -->
+<section class="py-5">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="section-tag">Our Purpose</span>
+      <h2 class="fw-800 mt-2">Mission & Vision</h2>
+    </div>
+    <div class="row g-4 align-items-center">
+      <div class="col-md-6">
+        <div class="mission-card h-100">
+          <div class="d-flex align-items-center gap-3 mb-3">
+            <div style="width:52px;height:52px;background:#1a73e8;border-radius:12px;display:flex;align-items:center;justify-content:center;"><i class="bi bi-bullseye text-white fs-4"></i></div>
+            <h4 class="fw-700 mb-0">Our Mission</h4>
+          </div>
+          <p class="text-muted">Our mission is to simplify event discovery and booking for users while providing organizers with powerful tools to manage and promote events efficiently.</p>
+          <ul class="list-unstyled mt-3">
+            <li class="mb-2"><i class="bi bi-check-circle-fill text-primary me-2"></i>Simplify event discovery for everyone</li>
+            <li class="mb-2"><i class="bi bi-check-circle-fill text-primary me-2"></i>Empower organizers with powerful tools</li>
+            <li class="mb-2"><i class="bi bi-check-circle-fill text-primary me-2"></i>Ensure transparent and secure ticketing</li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="vision-card h-100">
+          <div class="d-flex align-items-center gap-3 mb-3">
+            <div style="width:52px;height:52px;background:#ff6f00;border-radius:12px;display:flex;align-items:center;justify-content:center;"><i class="bi bi-eye text-white fs-4"></i></div>
+            <h4 class="fw-700 mb-0">Our Vision</h4>
+          </div>
+          <p class="text-muted">To become a leading digital platform for event management and discovery across India, connecting communities through seamless experiences.</p>
+          <ul class="list-unstyled mt-3">
+            <li class="mb-2"><i class="bi bi-check-circle-fill text-warning me-2"></i>Lead South Asia's live events ecosystem</li>
+            <li class="mb-2"><i class="bi bi-check-circle-fill text-warning me-2"></i>Bring world-class events to Tier-2 cities</li>
+            <li class="mb-2"><i class="bi bi-check-circle-fill text-warning me-2"></i>Build a vibrant global organizer community</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Why Choose Us -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="section-tag">Why EventSphere</span>
+      <h2 class="fw-800 mt-2">Why Choose Us?</h2>
+      <p class="text-muted">Everything you need, under one roof</p>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-6 col-lg-4">
+        <div class="why-item">
+          <div class="why-icon bg-primary bg-opacity-10 text-primary"><i class="bi bi-shield-check"></i></div>
+          <div><h6 class="fw-700">100% Secure Payments</h6><p class="text-muted small mb-0">Bank-grade encryption and PCI-DSS compliant payment gateway for every transaction.</p></div>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <div class="why-item">
+          <div class="why-icon bg-success bg-opacity-10 text-success"><i class="bi bi-qr-code"></i></div>
+          <div><h6 class="fw-700">Instant E-Tickets</h6><p class="text-muted small mb-0">Download your QR-coded tickets instantly after booking. No waiting, no printing needed.</p></div>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <div class="why-item">
+          <div class="why-icon bg-warning bg-opacity-10 text-warning"><i class="bi bi-headset"></i></div>
+          <div><h6 class="fw-700">24/7 Customer Support</h6><p class="text-muted small mb-0">Our dedicated support team is available round the clock via chat, email, and phone.</p></div>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <div class="why-item">
+          <div class="why-icon bg-danger bg-opacity-10 text-danger"><i class="bi bi-arrow-counterclockwise"></i></div>
+          <div><h6 class="fw-700">Easy Cancellations</h6><p class="text-muted small mb-0">Hassle-free refunds and cancellations with our transparent refund policy.</p></div>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <div class="why-item">
+          <div class="why-icon bg-info bg-opacity-10 text-info"><i class="bi bi-phone"></i></div>
+          <div><h6 class="fw-700">Mobile-First Design</h6><p class="text-muted small mb-0">Fully optimized for all devices. Book events on the go with our responsive platform.</p></div>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <div class="why-item">
+          <div class="why-icon" style="background:#f3e5f5;color:#9c27b0;"><i class="bi bi-tag"></i></div>
+          <div><h6 class="fw-700">Best Price Guarantee</h6><p class="text-muted small mb-0">Exclusive deals, coupons, and early-bird discounts on thousands of events.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Our Story / Timeline -->
+<section class="py-5">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-md-5">
+        <span class="section-tag">Our Journey</span>
+        <h2 class="fw-800 mt-2 mb-4">Our Story</h2>
+        <div class="timeline-item">
+          <div class="timeline-dot"><i class="bi bi-flag"></i></div>
+          <div><h6 class="fw-700">Jan — Project Started</h6><p class="text-muted small">EventSphere was developed as a full-stack project to solve real-world event discovery problems faced by students.
+          </p></div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"><i class="bi bi-rocket"></i></div>
+          <div><h6 class="fw-700">feb — Development Phase </h6><p class="text-muted small">Implemented features like event booking, organizer dashboards, and secure payments using Spring Boot.
+          </p></div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"><i class="bi bi-graph-up"></i></div>
+          <div><h6 class="fw-700">Apr — Deployment & Scaling  </h6><p class="text-muted small">Focused on improving UI/UX, performance, and adding real-time event management features.</div>
+        </div>
+        <!--        <div class="timeline-item">-->
+        <!--          <div class="timeline-dot"><i class="bi bi-trophy"></i></div>-->
+        <!--          <div><h6 class="fw-700">2026 — Deployment & Scaling  </h6><p class="text-muted small">Became India's #1 event booking platform with 2M+ users and 50K+ events hosted.</p></div>-->
+        <!--        </div>-->
+      </div>
+      <div class="col-md-7">
+        <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&h=400&fit=crop" class="rounded-4 shadow-lg w-100" alt="Team"/>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Team -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="section-tag">Our People</span>
+      <h2 class="fw-800 mt-2">Meet the Team</h2>
+      <p class="text-muted">The passionate minds behind EventSphere</p>
+    </div>
+    <div class="row g-2">
+      <div class="col-6 col-md-6">
+        <div class="team-card">
+          <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=300&h=200&fit=crop" class="team-img" alt="CEO"/>
+          <div class="p-3">
+            <h6 class="fw-700 mb-0">Aman Kumar</h6>
+            <!--            <p class="text-muted small mb-2">CEO & Co-Founder</p>-->
+            <div class="team-social">
+              <a href="https://www.linkedin.com/in/aman-kumar-b10a99340/"><i class="bi bi-linkedin"></i></a>
+              <a href="https://github.com/amankumar90270"><i class="bi bi-github"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-6">
+        <div class="team-card">
+          <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=300&h=200&fit=crop" class="team-img" alt="CTO"/>
+          <div class="p-3">
+            <h6 class="fw-700 mb-0">Akshita Rai</h6>
+            <!--            <p class="text-muted small mb-2">CTO & Co-Founder</p>-->
+            <div class="team-social">
+              <a href="https://www.linkedin.com/in/akshita-rai-66b716344/"><i class="bi bi-linkedin"></i></a>
+              <a href="https://github.com/Akshita3006"><i class="bi bi-github"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--      <div class="col-6 col-md-3">-->
+      <!--        <div class="team-card">-->
+      <!--          <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&h=200&fit=crop" class="team-img" alt="CMO"/>-->
+      <!--          <div class="p-3">-->
+      <!--            <h6 class="fw-700 mb-0">Arjun Nair</h6>-->
+      <!--            <p class="text-muted small mb-2">Chief Marketing Officer</p>-->
+      <!--            <div class="team-social">-->
+      <!--              <a href="#"><i class="bi bi-linkedin"></i></a>-->
+      <!--              <a href="#"><i class="bi bi-instagram"></i></a>-->
+      <!--            </div>-->
+      <!--          </div>-->
+      <!--        </div>-->
+      <!--      </div>-->
+      <!--      <div class="col-6 col-md-3">-->
+      <!--        <div class="team-card">-->
+      <!--          <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300&h=200&fit=crop" class="team-img" alt="COO"/>-->
+      <!--          <div class="p-3">-->
+      <!--            <h6 class="fw-700 mb-0">Sneha Patel</h6>-->
+      <!--            <p class="text-muted small mb-2">Chief Operations Officer</p>-->
+      <!--            <div class="team-social">-->
+      <!--              <a href="#"><i class="bi bi-linkedin"></i></a>-->
+      <!--              <a href="#"><i class="bi bi-twitter-x"></i></a>-->
+      <!--            </div>-->
+      <!--          </div>-->
+      <!--        </div>-->
+      <!--      </div>-->
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="py-5" style="background:linear-gradient(135deg,#0d1b3e,#1a3a6e);color:#fff;">
+  <div class="container text-center">
+    <h2 class="fw-800 mb-3">Ready to Experience Something Amazing?</h2>
+    <p class="opacity-75 mb-4">Join 2 million happy users discovering and booking events across India.</p>
+    <div class="d-flex justify-content-center gap-3 flex-wrap">
+      <a th:href="@{/public/upcomingevents}" class="btn btn-primary btn-lg px-5">Explore Events</a>
+      <a th:href="@{/register}" class="btn btn-outline-light btn-lg px-5">List Your Event</a>
+    </div>
+  </div>
+</section>
+<div th:replace="~{public/publicfooter :: publicfooter}"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

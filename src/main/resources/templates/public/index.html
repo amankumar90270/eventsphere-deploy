@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EventSphere - Your Ultimate Event Booking Platform</title>
+  <style>
+    .carousel-item{height:540px;background-size:cover;background-position:center;position:relative;}
+    .carousel-item::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(26,115,232,.82),rgba(13,71,161,.65));}
+    .carousel-caption{top:50%;transform:translateY(-50%);bottom:auto;}
+    .hero-search .form-control,.hero-search .form-select{border:none;border-radius:8px;padding:.65rem 1rem;}
+    .featured-events{padding:4rem 0;background:#fff;}
+    .live-events{padding:4rem 0;background:#f4f6fb;}
+    .categories-section{padding:4rem 0;background:#fff;}
+    .stats-section{padding:3rem 0;background:linear-gradient(135deg,#1a73e8,#0d47a1);color:#fff;}
+    .stat-box{text-align:center;}
+    .stat-num{font-size:2.5rem;font-weight:800;}
+    .newsletter-section{padding:3rem 0;background:#1a1a2e;color:#fff;}
+  </style>
+</head>
+<body>
+<div th:replace="~{public/publicheader :: publicheader}"></div>
+
+<!-- Hero Carousel -->
+<div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
+  <div class="carousel-indicators">
+    <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active"></button>
+    <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1"></button>
+    <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2"></button>
+  </div>
+  <div class="carousel-inner">
+    <div class="carousel-item active" style="background-image:url('https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=1400');">
+      <div class="carousel-caption">
+        <h1 class="display-3 fw-bold mb-3">Discover Amazing Events</h1>
+        <p class="fs-5 mb-4">Book tickets for concerts, festivals, sports &amp; more</p>
+        <!-- SEARCH FORM -->
+        <form th:action="@{/public/upcomingevents}" method="get" class="hero-search">
+          <div class="row g-2 justify-content-center">
+            <div class="col-md-4">
+              <input type="text" class="form-control" name="keyword" placeholder="Search events...">
+            </div>
+            <div class="col-md-3">
+              <select class="form-select" name="category">
+                <option value="">All Categories</option>
+                <option th:each="cat : ${categories}" th:value="${cat.name}" th:text="${cat.name}">Category</option>
+              </select>
+            </div>
+            <div class="col-md-2">
+              <button class="btn btn-warning w-100 fw-600"><i class="bi bi-search"></i> Search</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="carousel-item" style="background-image:url('https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=1400');">
+      <div class="carousel-caption">
+        <h1 class="display-3 fw-bold mb-3">Live Music Experiences</h1>
+        <p class="fs-5 mb-4">Get tickets to the hottest concerts and festivals</p>
+        <a th:href="@{/public/upcomingevents}" class="btn btn-primary-custom btn-lg">Explore Events</a>
+      </div>
+    </div>
+    <div class="carousel-item" style="background-image:url('https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?w=1400');">
+      <div class="carousel-caption">
+        <h1 class="display-3 fw-bold mb-3">Sports &amp; Entertainment</h1>
+        <p class="fs-5 mb-4">Never miss your favorite team's match</p>
+        <a th:href="@{/public/upcomingevents}" class="btn btn-primary-custom btn-lg">Book Now</a>
+      </div>
+    </div>
+  </div>
+  <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon"></span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+    <span class="carousel-control-next-icon"></span>
+  </button>
+</div>
+
+<!-- Featured / Upcoming Events Section -->
+<section class="featured-events">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="section-title center">Upcoming Events</h2>
+      <p class="section-subtitle">Don't miss these amazing upcoming events</p>
+    </div>
+    <!-- No events fallback -->
+    <div th:if="${#lists.isEmpty(upcomingEvents)}" class="text-center py-5 text-muted">
+      <i class="bi bi-calendar-x fs-1 mb-3 d-block"></i>
+      <p>No upcoming events at the moment. Check back soon!</p>
+    </div>
+    <div class="row g-4" th:unless="${#lists.isEmpty(upcomingEvents)}">
+      <div class="col-lg-3 col-md-6" th:each="event : ${upcomingEvents}">
+        <div class="event-card">
+          <div class="event-card-img">
+            <img th:src="${event.imageUrl != null ? event.imageUrl : 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=400'}"
+                 th:alt="${event.title}" alt="Event">
+            <span class="event-badge" th:text="${event.featured ? 'Featured' : (event.category != null ? event.category.name : 'Event')}">Event</span>
+          </div>
+          <div class="event-card-body">
+            <h3 class="event-title" th:text="${event.title}">Event Title</h3>
+            <div class="event-meta">
+              <i class="bi bi-calendar3"></i>
+              <span th:text="${#temporals.format(event.startDate,'dd MMM yyyy')}">Date</span>
+            </div>
+            <div class="event-meta">
+              <i class="bi bi-geo-alt"></i>
+              <span th:text="${event.venue + ', ' + event.city}">Venue</span>
+            </div>
+            <div class="event-price" th:text="${event.formattedPrice}">₹0</div>
+            <a th:href="@{/public/eventdetails/{id}(id=${event.id})}" class="btn-book-now">Book Now</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="text-center mt-5">
+      <a th:href="@{/public/upcomingevents}" class="btn btn-outline-custom btn-lg">View All Events</a>
+    </div>
+  </div>
+</section>
+
+<!-- Live Events Section -->
+<section class="live-events">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="section-title center">Live Events</h2>
+      <p class="section-subtitle">Happening right now — don't miss out!</p>
+    </div>
+    <div th:if="${#lists.isEmpty(liveEvents)}" class="text-center py-4 text-muted">
+      <i class="bi bi-broadcast fs-1 mb-2 d-block text-danger"></i>
+      <p>No live events right now. <a th:href="@{/public/upcomingevents}">Browse upcoming events</a></p>
+    </div>
+    <div class="row g-4" th:unless="${#lists.isEmpty(liveEvents)}">
+      <div class="col-lg-4 col-md-6" th:each="event : ${liveEvents}">
+        <div class="event-card">
+          <div class="event-card-img">
+            <img th:src="${event.imageUrl != null ? event.imageUrl : 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=400'}"
+                 th:alt="${event.title}" alt="Live Event">
+            <span class="event-badge" style="background:#e53935;"><span style="width:8px;height:8px;background:#fff;border-radius:50%;display:inline-block;margin-right:5px;"></span>LIVE</span>
+          </div>
+          <div class="event-card-body">
+            <h3 class="event-title" th:text="${event.title}">Event Title</h3>
+            <div class="event-meta"><i class="bi bi-geo-alt"></i><span th:text="${event.city}">City</span></div>
+            <div class="event-price" th:text="${event.formattedPrice}">₹0</div>
+            <a th:href="@{/public/eventdetails/{id}(id=${event.id})}" class="btn-book-now">Book Seats</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="text-center mt-4" th:unless="${#lists.isEmpty(liveEvents)}">
+      <a th:href="@{/public/liveevents}" class="btn btn-outline-custom btn-lg">View All Live Events</a>
+    </div>
+  </div>
+</section>
+
+<!-- Categories Section -->
+<section class="categories-section">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="section-title center">Browse by Category</h2>
+      <p class="section-subtitle">Find events that match your interests</p>
+    </div>
+    <div class="row g-3 justify-content-center">
+      <div class="col-6 col-md-3 col-lg-2" th:each="cat : ${categories}">
+        <a th:href="@{/public/upcomingevents(category=${cat.name})}" class="text-decoration-none">
+          <div class="text-center p-3 bg-white rounded-3 shadow-sm h-100" style="transition:.2s;"
+               onmouseover="this.style.boxShadow='0 8px 25px rgba(0,0,0,.15)';this.style.transform='translateY(-4px)'"
+               onmouseout="this.style.boxShadow='';this.style.transform=''">
+            <i th:class="${'bi ' + (cat.icon != null ? cat.icon : 'bi-tag') + ' fs-2 text-primary'}"></i>
+            <div class="fw-600 mt-2 small" th:text="${cat.name}">Category</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section">
+  <div class="container">
+    <div class="row g-4 text-center">
+      <div class="col-md-5 stat-box">
+        <div class="stat-num" th:text="${totalEvents != null ? totalEvents : 0}">0</div>
+        <div>Total Events</div>
+      </div>
+      <div class="col-md-5 stat-box">
+        <div class="stat-num" th:text="${#lists.size(categories)}">0</div>
+        <div>Categories</div>
+      </div>
+      <!--      <div class="col-md-3 stat-box">-->
+      <!--        <div class="stat-num">10K+</div>-->
+      <!--        <div>Happy Attendees</div>-->
+      <!--      </div>-->
+      <!--      <div class="col-md-3 stat-box">-->
+      <!--        <div class="stat-num">50+</div>-->
+      <!--        <div>Cities</div>-->
+      <!--      </div>-->
+    </div>
+  </div>
+</section>
+
+<!-- Newsletter -->
+<section class="newsletter-section">
+  <div class="container text-center">
+    <h3 class="fw-bold mb-2">Stay Updated!</h3>
+    <p class="mb-4 opacity-75">Get notified about new events and exclusive deals</p>
+    <form class="row g-2 justify-content-center" onsubmit="event.preventDefault();alert('Thank you for subscribing!')">
+      <div class="col-md-5">
+        <input type="email" class="form-control" placeholder="Enter your email">
+      </div>
+      <div class="col-auto">
+        <button type="submit" class="btn btn-warning fw-600 px-4">Subscribe</button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<div th:replace="~{public/publicfooter :: publicfooter}"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

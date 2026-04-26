@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>My Dashboard - EventSphere</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+    <link th:href="@{/css/main.css}" rel="stylesheet"/>
+</head>
+<body>
+<div class="dashboard-wrapper">
+    <div th:replace="~{user/userheader :: header}"></div>
+    <main class="main-content" id="mainContent">
+        <nav class="dashboard-navbar">
+            <button class="navbar-toggle" id="sidebarToggle"><i class="bi bi-list"></i></button>
+            <div class="navbar-search"><i class="bi bi-search position-absolute ms-3 mt-2"></i><input type="text" placeholder="Search events..."></div>
+            <div class="navbar-actions">
+                <a th:href="@{/user/notifications}" class="notification-icon" style="text-decoration:none;color:inherit;cursor:pointer;" title="View Notifications">
+                    <i class="bi bi-bell"></i>
+                    <span class="notification-badge" th:text="${unreadCount}">0</span>
+                </a>
+                <div class="user-profile">
+                    <div class="user-avatar" th:text="${user != null ? user.initials : 'U'}">U</div>
+                    <div class="d-none d-md-block">
+                        <div class="fw-600" th:text="${user != null ? user.fullName : 'User'}">User</div>
+                        <small class="text-muted">Member</small>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <div class="p-4">
+            <div class="mb-4">
+                <h2 class="fw-bold mb-1">Welcome back,
+                    <span th:text="${user != null ? user.firstName : 'there'}">there</span>! 🎉</h2>
+                <p class="text-muted">Discover amazing events happening around you</p>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="row g-4 mb-4">
+                <div class="col-xl-3 col-md-6">
+                    <div class="stats-card">
+                        <div class="stats-icon blue"><i class="bi bi-ticket-perforated"></i></div>
+                        <div class="stats-content">
+                            <h3 th:text="${upcomingCount}">0</h3>
+                            <p>Confirmed Bookings</p>
+                            <a th:href="@{/user/booking}" class="text-decoration-none small text-primary">View all <i class="bi bi-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="stats-card">
+                        <div class="stats-icon green"><i class="bi bi-calendar-check"></i></div>
+                        <div class="stats-content">
+                            <h3 th:text="${totalBookings}">0</h3>
+                            <p>Total Bookings</p>
+                            <a th:href="@{/user/booking}" class="text-decoration-none small text-success">History <i class="bi bi-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="stats-card">
+                        <div class="stats-icon orange"><i class="bi bi-x-circle"></i></div>
+                        <div class="stats-content">
+                            <h3 th:text="${cancelledCount}">0</h3>
+                            <p>Cancelled</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="stats-card" style="cursor:pointer;" onclick="window.location.href='/user/notifications'">
+                        <div class="stats-icon red"><i class="bi bi-bell"></i></div>
+                        <div class="stats-content">
+                            <h3 th:text="${unreadCount}">0</h3>
+                            <p>Unread / <span th:text="${totalNotifications}">0</span> Total</p>
+                            <a th:href="@{/user/notifications}" class="text-decoration-none small text-danger">View All <i class="bi bi-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4 mb-4">
+                <!-- My Recent Bookings -->
+                <div class="col-xl-7">
+                    <div class="table-card">
+                        <div class="table-header">
+                            <h3 class="table-title">My Recent Bookings</h3>
+                            <a th:href="@{/user/booking}" class="btn btn-sm btn-outline-primary">View All</a>
+                        </div>
+                        <div th:if="${#lists.isEmpty(myBookings)}" class="p-4 text-center text-muted">
+                            <i class="bi bi-ticket-perforated fs-2 d-block mb-2"></i>
+                            No bookings yet. <a th:href="@{/user/browseevents}">Browse events!</a>
+                        </div>
+                        <div class="list-group list-group-flush">
+                            <div th:each="b : ${myBookings}" class="list-group-item px-3 py-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="fw-600 small" th:text="${b.event.title}">Event</div>
+                                        <div class="text-muted" style="font-size:.75rem;">
+                                            <i class="bi bi-calendar3 me-1"></i><span th:text="${b.event.startDate}">Date</span>
+                                            &nbsp;|&nbsp;<code th:text="${b.bookingRef}">REF</code>
+                                        </div>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="badge mb-1"
+                                              th:classappend="${b.status.name()=='CONFIRMED'}?'bg-success':(${b.status.name()=='PENDING'}?'bg-warning text-dark':'bg-danger')"
+                                              th:text="${b.status}">STATUS</span>
+                                        <div class="small text-muted">₹<span th:text="${#numbers.formatDecimal(b.totalAmount,1,'COMMA',0,'POINT')}">0</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Suggested Events -->
+                <div class="col-xl-5">
+                    <div class="table-card h-100">
+                        <div class="table-header">
+                            <h3 class="table-title">Upcoming Events</h3>
+                            <a th:href="@{/user/browseevents}" class="btn btn-sm btn-outline-primary">Browse All</a>
+                        </div>
+                        <div th:if="${#lists.isEmpty(suggestedEvents)}" class="p-4 text-center text-muted">
+                            No events available right now.
+                        </div>
+                        <div class="list-group list-group-flush">
+                            <div th:each="ev : ${suggestedEvents}" class="list-group-item px-3 py-3">
+                                <div class="d-flex justify-content-between align-items-start gap-2">
+                                    <div>
+                                        <div class="fw-600 small" th:text="${ev.title}">Event</div>
+                                        <div class="text-muted" style="font-size:.75rem;">
+                                            <i class="bi bi-geo-alt me-1"></i><span th:text="${ev.city}">City</span>
+                                            &nbsp;|&nbsp;<span th:text="${ev.startDate}">Date</span>
+                                        </div>
+                                        <div class="small text-primary fw-600 mt-1" th:text="${ev.formattedPrice}">Price</div>
+                                        <div class="small text-warning mt-1" th:if="${ev.startDate != null}">
+                                            <i class="bi bi-alarm me-1"></i>
+                                            <span th:data-countdown="${ev.startDate}">Calculating...</span>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex flex-column gap-1 flex-shrink-0">
+                                        <a th:href="@{/user/eventdetails/{id}(id=${ev.id})}" class="btn btn-sm btn-outline-secondary">Details</a>
+                                        <a th:href="@{/user/checkout(eventId=${ev.id},qty=1)}"
+                                           class="btn btn-sm btn-primary-custom">Book</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-3 text-center border-top">
+                            <a th:href="@{/user/browseevents}" class="btn btn-sm btn-outline-primary w-100">
+                                <i class="bi bi-grid me-1"></i>Browse All Events
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="table-card">
+                <div class="table-header"><h3 class="table-title">Quick Actions</h3></div>
+                <div class="row g-3 p-3">
+                    <div class="col-md-3">
+                        <a th:href="@{/user/browseevents}" class="btn btn-outline-primary w-100">
+                            <i class="bi bi-grid me-2"></i>Browse Events
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a th:href="@{/user/booking}" class="btn btn-outline-success w-100">
+                            <i class="bi bi-ticket me-2"></i>My Bookings
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a th:href="@{/user/notifications}" class="btn btn-outline-warning w-100">
+                            <i class="bi bi-bell me-2"></i>Notifications
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a th:href="@{/user/profile}" class="btn btn-outline-secondary w-100">
+                            <i class="bi bi-person me-2"></i>My Profile
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.getElementById('sidebarToggle').addEventListener('click',function(){
+        document.getElementById('sidebar').classList.toggle('collapsed');
+        document.getElementById('mainContent').classList.toggle('expanded');
+    });
+
+    // Live countdown timers for all [data-countdown] elements
+    function updateCountdowns() {
+        document.querySelectorAll('[data-countdown]').forEach(function(el) {
+            const target = new Date(el.dataset.countdown + 'T00:00:00');
+            const now = new Date();
+            const diff = target - now;
+            if (diff <= 0) { el.textContent = 'Started!'; return; }
+            const d = Math.floor(diff / 86400000);
+            const h = Math.floor((diff % 86400000) / 3600000);
+            const m = Math.floor((diff % 3600000) / 60000);
+            el.textContent = d + 'd ' + h + 'h ' + m + 'm';
+        });
+    }
+    updateCountdowns();
+    setInterval(updateCountdowns, 60000);
+</script>
+</body>
+</html>

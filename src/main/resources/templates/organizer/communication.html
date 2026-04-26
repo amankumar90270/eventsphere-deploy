@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Communication - EventSphere Organiser</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+    <link th:href="@{/css/admin.css}" rel="stylesheet"/>
+</head>
+<body>
+<div class="dashboard-wrapper">
+    <div th:replace="~{organizer/organizerheader :: organizerheader}"></div>
+    <main class="main-content" id="mainContent">
+        <nav class="dashboard-navbar">
+            <button class="navbar-toggle" id="sidebarToggle"><i class="bi bi-list"></i></button>
+            <div class="navbar-actions ms-auto">
+                <div class="user-profile">
+                    <div class="user-avatar" th:text="${organizer != null ? organizer.initials : 'OR'}">OR</div>
+                    <div class="d-none d-md-block"><div class="fw-600" th:text="${organizer != null ? organizer.fullName : 'Organiser'}">Organiser</div><small class="text-muted">Event Organiser</small></div>
+                </div>
+            </div>
+        </nav>
+        <div class="p-4">
+            <div class="mb-4"><h2 class="fw-bold mb-1">Communication</h2><p class="text-muted">Send updates to your event attendees</p></div>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="table-card p-4">
+                        <h5 class="fw-bold mb-3">Select Event</h5>
+                        <div th:if="${#lists.isEmpty(events)}" class="text-muted small">No events yet.</div>
+                        <div th:each="ev : ${events}" class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="eventSelect" th:id="'ev-'+${ev.id}" th:value="${ev.id}"/>
+                            <label class="form-check-label small fw-600" th:for="'ev-'+${ev.id}" th:text="${ev.title}">Event</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="table-card p-4">
+                        <h5 class="fw-bold mb-3"><i class="bi bi-megaphone me-2"></i>Send Message to Attendees</h5>
+                        <div class="alert alert-info small mb-3">
+                            <i class="bi bi-info-circle me-2"></i>
+                            Messages appear as platform notifications for all confirmed attendees of the selected event.
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-600">Subject / Title</label>
+                            <input type="text" class="form-control" placeholder="e.g. Venue Update for Tomorrow's Event"/>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-600">Message</label>
+                            <textarea class="form-control" rows="5" placeholder="Write your message to attendees..."></textarea>
+                        </div>
+                        <button class="btn btn-primary-custom">
+                            <i class="bi bi-send me-2"></i>Send to Attendees
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>document.getElementById('sidebarToggle').addEventListener('click',function(){document.getElementById('sidebar').classList.toggle('collapsed');document.getElementById('mainContent').classList.toggle('expanded');});</script>
+</body>
+</html>

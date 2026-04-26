@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Organiser Dashboard - EventSphere</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+    <link th:href="@{/css/admin.css}" rel="stylesheet"/>
+</head>
+<body>
+<div class="dashboard-wrapper">
+    <div th:replace="~{organizer/organizerheader :: organizerheader}"></div>
+    <main class="main-content" id="mainContent">
+        <nav class="dashboard-navbar">
+            <button class="navbar-toggle" id="sidebarToggle"><i class="bi bi-list"></i></button>
+            <div class="navbar-search"><i class="bi bi-search position-absolute ms-3 mt-2"></i><input type="text" placeholder="Search events..."></div>
+            <div class="navbar-actions">
+                <div class="user-profile">
+                    <div class="user-avatar" style="background:var(--success);"
+                         th:text="${organizer != null ? organizer.initials : 'OR'}">OR</div>
+                    <div class="d-none d-md-block">
+                        <div class="fw-600" th:text="${organizer != null ? organizer.fullName : 'Organiser'}">Organiser</div>
+                        <small class="text-muted">Event Organiser</small>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <div class="p-4">
+            <div class="mb-4">
+                <h2 class="fw-bold mb-1">Welcome back,
+                    <span th:text="${organizer != null ? organizer.firstName : 'Organiser'}">Organiser</span>! 👋</h2>
+                <p class="text-muted">Here's what's happening with your events today.</p>
+            </div>
+
+            <!-- Stats -->
+            <div class="row g-4 mb-4">
+                <div class="col-xl-3 col-md-6">
+                    <div class="stats-card">
+                        <div class="stats-icon blue"><i class="bi bi-calendar-event"></i></div>
+                        <div class="stats-content">
+                            <h3 th:text="${eventCount}">0</h3>
+                            <p>My Events</p>
+                            <a th:href="@{/organizer/events}" class="text-decoration-none small text-primary">View all <i class="bi bi-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="stats-card">
+                        <div class="stats-icon green"><i class="bi bi-ticket-perforated"></i></div>
+                        <div class="stats-content">
+                            <h3 th:text="${bookingCount}">0</h3>
+                            <p>Total Bookings</p>
+                            <a th:href="@{/organizer/bookings}" class="text-decoration-none small text-success">View <i class="bi bi-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="stats-card">
+                        <div class="stats-icon orange"><i class="bi bi-check-circle"></i></div>
+                        <div class="stats-content">
+                            <h3 th:text="${confirmedCount}">0</h3>
+                            <p>Confirmed Bookings</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="stats-card">
+                        <div class="stats-icon red"><i class="bi bi-currency-rupee"></i></div>
+                        <div class="stats-content">
+                            <h3>₹<span th:text="${#numbers.formatDecimal(revenue,1,'COMMA',0,'POINT')}">0</span></h3>
+                            <p>Total Revenue</p>
+                            <a th:href="@{/organizer/analytics}" class="text-decoration-none small text-danger">Analytics <i class="bi bi-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4 mb-4">
+                <!-- Recent Bookings -->
+                <div class="col-xl-8">
+                    <div class="table-card">
+                        <div class="table-header">
+                            <h3 class="table-title">Recent Bookings</h3>
+                            <a th:href="@{/organizer/bookings}" class="btn btn-sm btn-outline-primary">View All</a>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table custom-table align-middle">
+                                <thead><tr><th>Ref</th><th>Member</th><th>Event</th><th>Qty</th><th>Amount</th><th>Status</th></tr></thead>
+                                <tbody>
+                                <tr th:if="${#lists.isEmpty(recentBookings)}">
+                                    <td colspan="6" class="text-center text-muted py-3">No bookings yet on your events</td>
+                                </tr>
+                                <tr th:each="b : ${recentBookings}">
+                                    <td><code class="text-primary small" th:text="${b.bookingRef}">REF</code></td>
+                                    <td th:text="${b.user.fullName}">User</td>
+                                    <td class="small" th:text="${b.event.title}">Event</td>
+                                    <td th:text="${b.quantity}">1</td>
+                                    <td class="fw-600">₹<span th:text="${#numbers.formatDecimal(b.totalAmount,1,'COMMA',0,'POINT')}">0</span></td>
+                                    <td>
+                                        <span class="badge"
+                                              th:classappend="${b.status.name()=='CONFIRMED'}?'bg-success':(${b.status.name()=='PENDING'}?'bg-warning text-dark':'bg-danger')"
+                                              th:text="${b.status}">STATUS</span>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- My Events Status -->
+                <div class="col-xl-4">
+                    <div class="table-card h-100">
+                        <div class="table-header">
+                            <h3 class="table-title">My Events</h3>
+                            <a th:href="@{/organizer/events}" class="btn btn-sm btn-outline-primary">View All</a>
+                        </div>
+                        <div th:if="${#lists.isEmpty(myEvents)}" class="p-3 text-center text-muted small">
+                            No events yet. <a th:href="@{/organizer/createevent}">Create one!</a>
+                        </div>
+                        <div class="list-group list-group-flush">
+                            <div th:each="ev : ${myEvents.stream().limit(5).toList()}" class="list-group-item px-3 py-2">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="fw-600 small" th:text="${ev.title}">Title</div>
+                                        <div class="text-muted" style="font-size:.75rem;" th:text="${ev.startDate}">Date</div>
+                                    </div>
+                                    <span class="badge"
+                                          th:classappend="${ev.status.name()=='APPROVED'}?'bg-success':(${ev.status.name()=='PENDING'}?'bg-warning text-dark':(${ev.status.name()=='LIVE'}?'bg-primary':'bg-danger'))"
+                                          th:text="${ev.status}">STATUS</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-3 text-center border-top">
+                            <a th:href="@{/organizer/createevent}" class="btn btn-sm btn-primary-custom w-100">
+                                <i class="bi bi-plus-lg me-1"></i>Create New Event
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="table-card">
+                <div class="table-header"><h3 class="table-title">Quick Actions</h3></div>
+                <div class="row g-3 p-3">
+                    <div class="col-md-3">
+                        <a th:href="@{/organizer/createevent}" class="btn btn-outline-primary w-100">
+                            <i class="bi bi-calendar-plus me-2"></i>Create Event
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a th:href="@{/organizer/bookings}" class="btn btn-outline-success w-100">
+                            <i class="bi bi-ticket me-2"></i>View Bookings
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a th:href="@{/organizer/analytics}" class="btn btn-outline-info w-100">
+                            <i class="bi bi-bar-chart me-2"></i>Analytics
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a th:href="@{/organizer/profile}" class="btn btn-outline-secondary w-100">
+                            <i class="bi bi-person me-2"></i>My Profile
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.getElementById('sidebarToggle').addEventListener('click',function(){
+        document.getElementById('sidebar').classList.toggle('collapsed');
+        document.getElementById('mainContent').classList.toggle('expanded');
+    });
+</script>
+</body>
+</html>

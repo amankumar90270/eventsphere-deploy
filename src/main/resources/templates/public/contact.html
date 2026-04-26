@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Contact Us - EventSphere</title>
+    <style>
+        .contact-hero{background:linear-gradient(135deg,#1a73e8,#0d47a1);color:#fff;padding:4rem 0;}
+        .info-card{background:#fff;border-radius:16px;padding:2rem;box-shadow:0 4px 20px rgba(0,0,0,.08);margin-bottom:1.5rem;}
+        .info-icon{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:1.5rem;}
+        .form-control,.form-select{border-radius:10px;border:2px solid #e0e0e0;padding:12px 16px;}
+        .form-control:focus,.form-select:focus{border-color:#1a73e8;box-shadow:0 0 0 3px rgba(26,115,232,.15);}
+        .btn-send{background:#1a73e8;color:#fff;border:none;border-radius:12px;padding:14px 36px;font-weight:600;font-size:1rem;transition:.2s;}
+        .btn-send:hover{background:#0d47a1;color:#fff;transform:translateY(-2px);}
+    </style>
+</head>
+<body>
+<div th:replace="~{public/publicheader :: publicheader}"></div>
+
+<div class="contact-hero text-center">
+    <div class="container">
+        <h1 class="display-4 fw-bold mb-3">Contact Us</h1>
+        <p class="fs-5 opacity-75">We're here to help. Send us a message and we'll respond within 24 hours.</p>
+    </div>
+</div>
+
+<div class="container my-5">
+    <div class="row g-5">
+        <!-- Contact Info Cards -->
+        <div class="col-lg-4">
+            <div class="info-card text-center">
+                <div class="info-icon bg-primary bg-opacity-10 text-primary"><i class="bi bi-envelope-fill"></i></div>
+                <h6 class="fw-700">Email</h6>
+                <p class="text-muted small mb-0">amankumar731841@gmail.com <br> raiakshita305@gmail.com </p>
+            </div>
+            <div class="info-card text-center">
+                <div class="info-icon bg-success bg-opacity-10 text-success"><i class="bi bi-telephone-fill"></i></div>
+                <h6 class="fw-700">Phone</h6>
+                <p class="text-muted small mb-0">+91 9027066341<br>Mon–Sat, 9 AM – 5 PM</p>
+            </div>
+            <div class="info-card text-center">
+                <div class="info-icon bg-warning bg-opacity-10 text-warning"><i class="bi bi-geo-alt-fill"></i></div>
+                <h6 class="fw-700">Office</h6>
+                <p class="text-muted small mb-0">BBD University<br>Lucknow</p>
+            </div>
+        </div>
+
+        <!-- Contact Form -->
+        <div class="col-lg-8">
+            <div class="info-card">
+                <h4 class="fw-bold mb-4">Send us a Message</h4>
+
+                <!-- Success message -->
+                <div th:if="${success}" class="alert alert-success alert-dismissible fade show mb-4">
+                    <i class="bi bi-check-circle me-2"></i>
+                    <span th:text="${success}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+
+                <form th:action="@{/public/contact}" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-600">First Name *</label>
+                            <input type="text" class="form-control" name="firstName" placeholder="Enter first Name" required/>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-600">Last Name *</label>
+                            <input type="text" class="form-control" name="lastName" placeholder="Enter Second Name" required/>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-600">Email Address *</label>
+                            <input type="email" class="form-control" name="email" placeholder="Enter mail" required/>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-600">Phone Number</label>
+                            <input type="tel" class="form-control" name="phone" placeholder="Enter Mobile Number"/>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-600">Subject *</label>
+                            <select class="form-select" name="subject" required>
+                                <option value="">Select a subject</option>
+                                <option>Booking Issue</option>
+                                <option>Payment Problem</option>
+                                <option>Event Information</option>
+                                <option>Organizer Inquiry</option>
+                                <option>Technical Support</option>
+                                <option>Refund Request</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-600">Message *</label>
+                            <textarea class="form-control" name="message" rows="5"
+                                      placeholder="Describe your issue or question in detail..." required style="resize:none;"></textarea>
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn-send">
+                                <i class="bi bi-send me-2"></i>Send Message
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{public/publicfooter :: publicfooter}"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

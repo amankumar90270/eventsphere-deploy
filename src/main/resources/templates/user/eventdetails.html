@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${event != null ? event.title + ' - EventSphere' : 'Event Details - EventSphere'}">Event Details</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+    <link th:href="@{/css/main.css}" rel="stylesheet"/>
+    <style>
+        .event-banner{width:100%;height:360px;object-fit:cover;border-radius:16px;}
+        .event-banner-placeholder{width:100%;height:360px;border-radius:16px;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:5rem;}
+        .sticky-booking{position:sticky;top:80px;}
+        .info-box{background:#f8fafc;border-radius:12px;padding:1rem 1.2rem;}
+        .info-item{display:flex;align-items:center;gap:.75rem;padding:.5rem 0;border-bottom:1px solid #e2e8f0;font-size:.875rem;}
+        .info-item:last-child{border-bottom:none;}
+        .info-icon{width:32px;height:32px;border-radius:8px;background:#eff6ff;color:#1d4ed8;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+        .countdown-box{background:linear-gradient(135deg,#1d4ed8,#4f46e5);border-radius:14px;padding:1.2rem;color:#fff;text-align:center;}
+        .countdown-item{display:inline-block;min-width:52px;margin:0 .3rem;}
+        .countdown-num{font-size:1.8rem;font-weight:800;font-family:monospace;line-height:1;}
+        .countdown-lbl{font-size:.65rem;text-transform:uppercase;letter-spacing:.5px;opacity:.7;display:block;margin-top:2px;}
+    </style>
+</head>
+<body>
+<div class="dashboard-wrapper">
+    <div th:replace="~{user/userheader :: header}"></div>
+    <main class="main-content" id="mainContent">
+        <nav class="dashboard-navbar">
+            <button class="navbar-toggle" id="sidebarToggle"><i class="bi bi-list"></i></button>
+            <div class="navbar-search"><i class="bi bi-search position-absolute ms-3 mt-2"></i><input type="text" placeholder="Search events..."></div>
+            <div class="navbar-actions">
+                <div class="notification-icon">
+                    <a th:href="@{/user/notifications}" style="color:inherit;text-decoration:none;">
+                        <i class="bi bi-bell"></i>
+                        <span class="notification-badge" th:text="${unreadCount != null ? unreadCount : 0}">0</span>
+                    </a>
+                </div>
+                <div class="user-profile">
+                    <div class="user-avatar" th:text="${user!=null?user.initials:'U'}">U</div>
+                    <div class="d-none d-md-block">
+                        <div class="fw-600" th:text="${user!=null?user.fullName:'User'}">User</div>
+                        <small class="text-muted">Member</small>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="p-4">
+            <!-- Breadcrumb -->
+            <nav class="mb-3">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a th:href="@{/user/browseevents}">Browse Events</a></li>
+                    <li class="breadcrumb-item active" th:text="${event != null ? event.title : 'Event Details'}">Event Details</li>
+                </ol>
+            </nav>
+
+            <!-- Not found -->
+            <div th:if="${event == null}" class="text-center py-5">
+                <i class="bi bi-calendar-x fs-1 text-muted d-block mb-3"></i>
+                <h4 class="text-muted">Event not found</h4>
+                <a th:href="@{/user/browseevents}" class="btn btn-primary mt-2">Browse Events</a>
+            </div>
+
+            <div th:if="${event != null}" class="row g-4">
+                <!-- Main Content -->
+                <div class="col-xl-8">
+
+                    <!-- Banner Image -->
+                    <img th:if="${event.imageUrl != null and !event.imageUrl.isEmpty()}"
+                         th:src="${event.imageUrl}" alt="Event Banner" class="event-banner mb-4">
+                    <div th:unless="${event.imageUrl != null and !event.imageUrl.isEmpty()}"
+                         class="event-banner-placeholder mb-4">
+                        <span th:text="${event.category != null and event.category.icon != null ? event.category.icon : '🎉'}">🎉</span>
+                    </div>
+
+                    <!-- Title & Meta -->
+                    <div class="d-flex justify-content-between align-items-start mb-3 flex-wrap gap-3">
+                        <div>
+                            <div class="d-flex gap-2 mb-2 flex-wrap">
+                                <span class="badge bg-primary"
+                                      th:if="${event.category != null}"
+                                      th:text="${event.category.name}">Category</span>
+                                <span class="badge bg-success" th:if="${event.featured}">Featured</span>
+                                <span class="badge"
+                                      th:classappend="${event.status.name()=='LIVE'}?'bg-danger':(${event.status.name()=='APPROVED'}?'bg-success':'bg-warning text-dark')"
+                                      th:text="${event.status}">Status</span>
+                            </div>
+                            <h2 class="fw-bold mb-1" th:text="${event.title}">Event Title</h2>
+                            <div class="d-flex align-items-center gap-3 flex-wrap text-muted">
+                                <span th:if="${event.startDate != null}">
+                                    <i class="bi bi-calendar3 me-1"></i>
+                                    <span th:text="${#temporals.format(event.startDate,'EEE, dd MMM yyyy')}">Date</span>
+                                    <span th:if="${event.startTime != null}">&nbsp;·&nbsp;<span th:text="${event.startTime}">Time</span></span>
+                                </span>
+                            </div>
+                            <div class="mt-1 text-muted" th:if="${event.venue != null}">
+                                <i class="bi bi-geo-alt me-1"></i>
+                                <span th:text="${event.venue}">Venue</span>
+                                <span th:if="${event.city != null}">, <span th:text="${event.city}">City</span></span>
+                            </div>
+                        </div>
+<!--                        <div class="d-flex gap-2">-->
+<!--                            <button class="btn btn-outline-secondary"><i class="bi bi-heart me-1"></i>Save</button>-->
+<!--                            <button class="btn btn-outline-secondary"><i class="bi bi-share me-1"></i>Share</button>-->
+<!--                        </div>-->
+                    </div>
+
+                    <!-- Quick Info -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-6 col-md-3">
+                            <div class="p-3 bg-light rounded text-center">
+                                <i class="bi bi-people text-primary" style="font-size:1.4rem;"></i>
+                                <div class="fw-600 mt-1" th:text="${event.totalCapacity}">0</div>
+                                <small class="text-muted">Capacity</small>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="p-3 bg-light rounded text-center">
+                                <i class="bi bi-ticket-perforated text-primary" style="font-size:1.4rem;"></i>
+                                <div class="fw-600 mt-1" th:text="${event.availableSeats}">0</div>
+                                <small class="text-muted">Seats Left</small>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="p-3 bg-light rounded text-center">
+                                <i class="bi bi-tag text-primary" style="font-size:1.4rem;"></i>
+                                <div class="fw-600 mt-1" th:text="${event.formattedPrice}">₹0</div>
+                                <small class="text-muted">Per Ticket</small>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="p-3 bg-light rounded text-center">
+                                <i class="bi bi-graph-up text-primary" style="font-size:1.4rem;"></i>
+                                <div class="fw-600 mt-1" th:text="${#numbers.formatDecimal(event.occupancyPercent,1,'COMMA',0,'POINT') + '%'}">0%</div>
+                                <small class="text-muted">Booked</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- About -->
+                    <div class="table-card p-4 mb-4">
+                        <h5 class="fw-bold mb-3">About This Event</h5>
+                        <p class="text-muted" th:if="${event.description != null}" th:text="${event.description}">Description</p>
+                        <p class="text-muted" th:unless="${event.description != null}">No description provided.</p>
+                        <!-- Tags -->
+                        <div th:if="${event.tags != null and !event.tags.isEmpty()}" class="mt-3">
+                            <span th:each="tag : ${#strings.arraySplit(event.tags,',')}"
+                                  class="badge bg-light text-dark border me-1 mb-1"
+                                  th:text="${#strings.trim(tag)}">tag</span>
+                        </div>
+                    </div>
+
+                    <!-- Event Details -->
+                    <div class="table-card p-4 mb-4">
+                        <h5 class="fw-bold mb-3">Event Information</h5>
+                        <div class="info-box">
+                            <div class="info-item" th:if="${event.startDate != null}">
+                                <div class="info-icon"><i class="bi bi-calendar3"></i></div>
+                                <div>
+                                    <div class="fw-600">Start Date</div>
+                                    <div class="text-muted small" th:text="${#temporals.format(event.startDate,'EEEE, dd MMMM yyyy')}">Date</div>
+                                </div>
+                            </div>
+                            <div class="info-item" th:if="${event.endDate != null}">
+                                <div class="info-icon"><i class="bi bi-calendar-check"></i></div>
+                                <div>
+                                    <div class="fw-600">End Date</div>
+                                    <div class="text-muted small" th:text="${#temporals.format(event.endDate,'EEEE, dd MMMM yyyy')}">Date</div>
+                                </div>
+                            </div>
+                            <div class="info-item" th:if="${event.startTime != null}">
+                                <div class="info-icon"><i class="bi bi-clock"></i></div>
+                                <div>
+                                    <div class="fw-600">Start Time</div>
+                                    <div class="text-muted small" th:text="${event.startTime}">Time</div>
+                                </div>
+                            </div>
+                            <div class="info-item" th:if="${event.venue != null}">
+                                <div class="info-icon"><i class="bi bi-building"></i></div>
+                                <div>
+                                    <div class="fw-600">Venue</div>
+                                    <div class="text-muted small" th:text="${event.venue}">Venue</div>
+                                </div>
+                            </div>
+                            <div class="info-item" th:if="${event.city != null}">
+                                <div class="info-icon"><i class="bi bi-geo-alt"></i></div>
+                                <div>
+                                    <div class="fw-600">City</div>
+                                    <div class="text-muted small" th:text="${event.city}">City</div>
+                                </div>
+                            </div>
+                            <div class="info-item" th:if="${event.address != null}">
+                                <div class="info-icon"><i class="bi bi-map"></i></div>
+                                <div>
+                                    <div class="fw-600">Address</div>
+                                    <div class="text-muted small" th:text="${event.address}">Address</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Organizer -->
+                    <div class="table-card p-4" th:if="${event.organizer != null}">
+                        <h5 class="fw-bold mb-3">Organised By</h5>
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="user-avatar" style="width:52px;height:52px;font-size:1.1rem;background:var(--success);"
+                                 th:text="${event.organizer.initials}">OR</div>
+                            <div>
+                                <div class="fw-700" th:text="${event.organizer.fullName}">Organiser Name</div>
+                                <div class="text-muted small"
+                                     th:if="${event.organizer.organizationName != null}"
+                                     th:text="${event.organizer.organizationName}">Organization</div>
+                                <div class="text-muted small" th:text="${event.organizer.city}">City</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sticky Booking Sidebar -->
+                <div class="col-xl-4">
+                    <div class="sticky-booking">
+
+                        <!-- Countdown -->
+                        <div class="countdown-box mb-3" th:if="${event.startDate != null}"
+                             th:data-date="${event.startDate}">
+                            <div style="font-size:.8rem;opacity:.75;margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.5px;">
+                                <i class="bi bi-alarm me-1"></i>Event starts in
+                            </div>
+                            <div id="countdown">
+                                <span class="countdown-item"><span class="countdown-num" id="cd-days">--</span><span class="countdown-lbl">Days</span></span>
+                                <span style="font-size:1.5rem;font-weight:700;opacity:.5;">:</span>
+                                <span class="countdown-item"><span class="countdown-num" id="cd-hours">--</span><span class="countdown-lbl">Hours</span></span>
+                                <span style="font-size:1.5rem;font-weight:700;opacity:.5;">:</span>
+                                <span class="countdown-item"><span class="countdown-num" id="cd-mins">--</span><span class="countdown-lbl">Mins</span></span>
+                                <span style="font-size:1.5rem;font-weight:700;opacity:.5;">:</span>
+                                <span class="countdown-item"><span class="countdown-num" id="cd-secs">--</span><span class="countdown-lbl">Secs</span></span>
+                            </div>
+                        </div>
+
+                        <!-- Booking Card -->
+                        <div class="table-card p-4 mb-3">
+                            <h5 class="fw-bold mb-1" th:text="${event.formattedPrice}">₹0</h5>
+                            <small class="text-muted">per ticket</small>
+
+                            <hr class="my-3">
+
+                            <!-- Availability -->
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <small class="text-muted">Seats Available</small>
+                                    <small class="fw-600" th:text="${event.availableSeats + ' / ' + event.totalCapacity}">0/0</small>
+                                </div>
+                                <div class="progress" style="height:6px;border-radius:3px;">
+                                    <div class="progress-bar bg-success" role="progressbar"
+                                         th:style="'width:' + ${event.totalCapacity > 0 ? (event.availableSeats * 100 / event.totalCapacity) : 0} + '%'"></div>
+                                </div>
+                            </div>
+
+                            <!-- Tickets -->
+                            <div th:if="${tickets != null and !#lists.isEmpty(tickets)}" class="mb-3">
+                                <div class="fw-600 small mb-2">Ticket Types</div>
+                                <div th:each="t : ${tickets}" class="border rounded p-2 mb-2">
+                                    <div class="d-flex justify-content-between">
+                                        <span class="fw-600 small" th:text="${t.ticketType}">Type</span>
+                                        <span class="fw-700 text-primary small" th:text="${t.formattedPrice}">₹0</span>
+                                    </div>
+                                    <div th:if="${t.benefits != null}" class="text-muted" style="font-size:.75rem;" th:text="${t.benefits}">Benefits</div>
+                                </div>
+                            </div>
+
+                            <!-- Book now -->
+                            <a th:if="${event.availableSeats > 0}"
+                               th:href="@{/user/checkout(eventId=${event.id},qty=1)}"
+                               class="btn btn-primary-custom w-100 mb-2 fw-700">
+                                <i class="bi bi-ticket-perforated me-2"></i>Book Now
+                            </a>
+                            <div th:unless="${event.availableSeats > 0}"
+                                 class="btn btn-secondary w-100 mb-2 disabled">
+                                <i class="bi bi-x-circle me-2"></i>Sold Out
+                            </div>
+
+                            <p class="text-center text-muted small mb-0">
+                                <i class="bi bi-shield-check me-1"></i>Secure checkout — SSL encrypted
+                            </p>
+                        </div>
+
+                        <!-- Event Status Card -->
+                        <div class="table-card p-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-muted small">Event Status</span>
+                                <span class="badge"
+                                      th:classappend="${event.status.name()=='LIVE'}?'bg-danger':(${event.status.name()=='APPROVED'}?'bg-success':'bg-warning text-dark')"
+                                      th:text="${event.status}">Status</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <span class="text-muted small">Category</span>
+                                <span class="fw-600 small" th:text="${event.category != null ? event.category.name : '—'}">Category</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.getElementById('sidebarToggle').addEventListener('click', function() {
+        document.getElementById('sidebar').classList.toggle('collapsed');
+        document.getElementById('mainContent').classList.toggle('expanded');
+    });
+
+    // Countdown timer
+    (function() {
+        const box = document.querySelector('.countdown-box[data-date]');
+        if (!box) return;
+        const dateStr = box.dataset.date;
+        if (!dateStr) return;
+        const target = new Date(dateStr + 'T00:00:00');
+
+        function update() {
+            const now = new Date();
+            const diff = target - now;
+            if (diff <= 0) {
+                document.getElementById('countdown').innerHTML = '<span style="font-size:1rem;font-weight:700;">🔴 Event has started!</span>';
+                return;
+            }
+            const d = Math.floor(diff / 86400000);
+            const h = Math.floor((diff % 86400000) / 3600000);
+            const m = Math.floor((diff % 3600000) / 60000);
+            const s = Math.floor((diff % 60000) / 1000);
+            document.getElementById('cd-days').textContent  = String(d).padStart(2,'0');
+            document.getElementById('cd-hours').textContent = String(h).padStart(2,'0');
+            document.getElementById('cd-mins').textContent  = String(m).padStart(2,'0');
+            document.getElementById('cd-secs').textContent  = String(s).padStart(2,'0');
+        }
+        update();
+        setInterval(update, 1000);
+    })();
+</script>
+</body>
+</html>
