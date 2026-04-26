@@ -5,7 +5,7 @@
     "buildCommand": "sh gradlew bootJar -x test"
   },
   "deploy": {
-    "startCommand": "java -jar build/libs/YOUR-JAR-NAME.jar",
+    "startCommand": "java -jar build/libs/eventsphere-0.0.1-SNAPSHOT.jar",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 3
   }
